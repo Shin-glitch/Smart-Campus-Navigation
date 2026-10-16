@@ -45,6 +45,60 @@
 
         <section id="navigation" class="section active-section">
 
+            <!-- Facility Management -->
+
+            <div class="card">
+
+                <h2>Facility Management</h2>
+
+                <p class="description">
+                    Close a facility to remove its node and all
+                    connected edges from the active campus graph.
+                </p>
+
+                <div class="controls">
+
+                    <div class="input-group">
+
+                        <label for="facilitySelect">
+                            Facility
+                        </label>
+
+                        <select id="facilitySelect"></select>
+
+                    </div>
+
+                </div>
+
+                <div class="button-group">
+
+                    <button id="closeFacility" class="secondary-button">
+                        Close Facility
+                    </button>
+
+                    <button id="reopenFacility" class="primary-button">
+                        Reopen Facility
+                    </button>
+
+                </div>
+
+                <div class="facility-status">
+
+                    <p>
+                        <strong>Closed Facilities:</strong>
+                    </p>
+
+                    <p id="closedFacilities">
+                        None
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Find Route -->
+
             <div class="card">
 
                 <h2>Find Shortest Route</h2>
@@ -135,6 +189,7 @@
                 <p class="description">
                     Vertices represent campus locations and
                     weighted edges represent walking distances.
+                    Closed facilities are removed from the active graph.
                 </p>
 
                 <div id="graph"></div>
@@ -227,6 +282,11 @@
                         <p id="bfsRoute"></p>
 
                         <p>
+                            <strong>Route Distance:</strong>
+                            <span id="bfsDistance"></span>
+                        </p>
+
+                        <p>
                             <strong>Number of Edges:</strong>
                             <span id="bfsEdges"></span>
                         </p>
@@ -254,6 +314,12 @@
                         BFS considers only the number of edges,
                         so it finds a route with the minimum number
                         of hops.
+                    </p>
+
+                    <p>
+                        The BFS route distance shown above is the
+                        physical distance of the route selected by BFS.
+                        BFS does not use this distance when choosing the route.
                     </p>
 
                 </div>

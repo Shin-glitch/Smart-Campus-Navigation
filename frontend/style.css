@@ -213,6 +213,34 @@ button {
 
 
 /* =============================================
+   FACILITY MANAGEMENT
+============================================= */
+
+.facility-status {
+    margin-top: 20px;
+
+    padding: 15px;
+
+    background: #f8fafc;
+
+    border-radius: 8px;
+
+    border: 1px solid #ddd;
+
+    line-height: 1.7;
+}
+
+
+#closedFacilities {
+    color: #b91c1c;
+
+    font-weight: bold;
+
+    margin-top: 5px;
+}
+
+
+/* =============================================
    RESULTS
 ============================================= */
 

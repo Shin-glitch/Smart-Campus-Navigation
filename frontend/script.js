@@ -1,6 +1,6 @@
-// =============================================
-// CAMPUS GRAPH
-// =============================================
+/* =============================================
+   CAMPUS GRAPH
+============================================= */
 
 const campusGraph = {
 
@@ -72,6 +72,13 @@ const locations = Object.keys(campusGraph);
 
 
 // =============================================
+// CLOSED FACILITIES
+// =============================================
+
+const closedFacilities = new Set();
+
+
+// =============================================
 // GRAPH NODE POSITIONS
 // =============================================
 
@@ -130,10 +137,64 @@ const positions = {
 
 
 // =============================================
+// GET ACTIVE GRAPH
+// =============================================
+
+function getActiveGraph() {
+
+    const activeGraph = {};
+
+
+    for (const location of locations) {
+
+        if (closedFacilities.has(location)) {
+            continue;
+        }
+
+
+        activeGraph[location] = {};
+
+
+        for (
+            const neighbor in campusGraph[location]
+        ) {
+
+            if (
+                !closedFacilities.has(neighbor)
+            ) {
+
+                activeGraph[location][neighbor] =
+                    campusGraph[location][neighbor];
+
+            }
+
+        }
+
+    }
+
+
+    return activeGraph;
+}
+
+
+// =============================================
 // DIJKSTRA'S ALGORITHM
 // =============================================
 
 function dijkstra(graph, start, end) {
+
+    if (
+        !graph[start] ||
+        !graph[end]
+    ) {
+
+        return {
+            path: null,
+            distance: Infinity
+        };
+
+    }
+
 
     const distances = {};
 
@@ -163,11 +224,12 @@ function dijkstra(graph, start, end) {
         let smallestDistance = Infinity;
 
 
-        // Find unvisited node with smallest distance
-
         for (const node of unvisited) {
 
-            if (distances[node] < smallestDistance) {
+            if (
+                distances[node] <
+                smallestDistance
+            ) {
 
                 smallestDistance =
                     distances[node];
@@ -191,8 +253,6 @@ function dijkstra(graph, start, end) {
 
         unvisited.delete(current);
 
-
-        // Relax edges
 
         for (const neighbor in graph[current]) {
 
@@ -232,8 +292,6 @@ function dijkstra(graph, start, end) {
     }
 
 
-    // Reconstruct path
-
     const path = [];
 
     let current = end;
@@ -263,6 +321,16 @@ function dijkstra(graph, start, end) {
 // =============================================
 
 function bfs(graph, start, end) {
+
+    if (
+        !graph[start] ||
+        !graph[end]
+    ) {
+
+        return null;
+
+    }
+
 
     const queue = [start];
 
@@ -316,8 +384,6 @@ function bfs(graph, start, end) {
     }
 
 
-    // Reconstruct path
-
     const path = [];
 
     let current = end;
@@ -340,6 +406,44 @@ function bfs(graph, start, end) {
 
 
 // =============================================
+// CALCULATE PATH DISTANCE
+// =============================================
+
+function calculatePathDistance(
+    graph,
+    path
+) {
+
+    if (
+        !path ||
+        path.length < 2
+    ) {
+
+        return 0;
+
+    }
+
+
+    let distance = 0;
+
+
+    for (
+        let i = 0;
+        i < path.length - 1;
+        i++
+    ) {
+
+        distance +=
+            graph[path[i]][path[i + 1]];
+
+    }
+
+
+    return distance;
+}
+
+
+// =============================================
 // GENERATE RANDOM CONNECTED GRAPH
 // =============================================
 
@@ -348,14 +452,16 @@ function generateTestGraph(numberOfVertices) {
     const graph = {};
 
 
-    for (let i = 0; i < numberOfVertices; i++) {
+    for (
+        let i = 0;
+        i < numberOfVertices;
+        i++
+    ) {
 
         graph[i] = {};
 
     }
 
-
-    // First create a connected chain
 
     for (
         let i = 0;
@@ -373,8 +479,6 @@ function generateTestGraph(numberOfVertices) {
 
     }
 
-
-    // Add additional edges
 
     const extraEdges =
         numberOfVertices * 2;
@@ -444,10 +548,6 @@ function runPerformanceAnalysis() {
         const endNode = size - 1;
 
 
-        // -----------------------------
-        // DIJKSTRA
-        // -----------------------------
-
         const dijkstraStart =
             performance.now();
 
@@ -465,10 +565,6 @@ function runPerformanceAnalysis() {
                 dijkstraStart
             ) / 1000;
 
-
-        // -----------------------------
-        // BFS
-        // -----------------------------
 
         const bfsStart =
             performance.now();
@@ -547,6 +643,10 @@ const compareDestination =
     document.getElementById("compareDestination");
 
 
+const facilitySelect =
+    document.getElementById("facilitySelect");
+
+
 populateSelect(sourceSelect);
 
 populateSelect(destinationSelect);
@@ -554,6 +654,8 @@ populateSelect(destinationSelect);
 populateSelect(compareSource);
 
 populateSelect(compareDestination);
+
+populateSelect(facilitySelect);
 
 
 // Default values
@@ -564,6 +666,270 @@ destinationSelect.value =
 
 compareDestination.value =
     "Library";
+
+
+// =============================================
+// UPDATE LOCATION DROPDOWNS
+// =============================================
+
+function updateLocationDropdowns() {
+
+    const selects = [
+
+        sourceSelect,
+        destinationSelect,
+        compareSource,
+        compareDestination
+
+    ];
+
+
+    const currentValues =
+        selects.map(select => select.value);
+
+
+    selects.forEach((select, index) => {
+
+        const previousValue =
+            currentValues[index];
+
+
+        select.innerHTML = "";
+
+
+        locations.forEach(location => {
+
+            if (
+                closedFacilities.has(location)
+            ) {
+
+                return;
+
+            }
+
+
+            const option =
+                document.createElement("option");
+
+
+            option.value = location;
+
+            option.textContent = location;
+
+
+            select.appendChild(option);
+
+        });
+
+
+        if (
+            previousValue &&
+            !closedFacilities.has(previousValue)
+        ) {
+
+            select.value = previousValue;
+
+        }
+
+    });
+
+
+    // Make sure a valid default exists
+
+    if (!sourceSelect.value) {
+
+        sourceSelect.selectedIndex = 0;
+
+    }
+
+
+    if (!destinationSelect.value) {
+
+        destinationSelect.selectedIndex = 0;
+
+    }
+
+
+    if (!compareSource.value) {
+
+        compareSource.selectedIndex = 0;
+
+    }
+
+
+    if (!compareDestination.value) {
+
+        compareDestination.selectedIndex = 0;
+
+    }
+
+}
+
+
+// =============================================
+// UPDATE FACILITY DROPDOWN
+// =============================================
+
+function updateFacilityDropdown() {
+
+    const currentValue =
+        facilitySelect.value;
+
+
+    facilitySelect.innerHTML = "";
+
+
+    locations.forEach(location => {
+
+        const option =
+            document.createElement("option");
+
+
+        option.value = location;
+
+        option.textContent =
+            closedFacilities.has(location)
+                ? `${location} (Closed)`
+                : location;
+
+
+        facilitySelect.appendChild(option);
+
+    });
+
+
+    if (currentValue) {
+
+        facilitySelect.value =
+            currentValue;
+
+    }
+
+}
+
+
+// =============================================
+// UPDATE CLOSED FACILITY DISPLAY
+// =============================================
+
+function updateClosedFacilitiesDisplay() {
+
+    const display =
+        document.getElementById(
+            "closedFacilities"
+        );
+
+
+    if (closedFacilities.size === 0) {
+
+        display.textContent =
+            "None";
+
+        return;
+
+    }
+
+
+    display.textContent =
+        Array.from(
+            closedFacilities
+        ).join(", ");
+
+}
+
+
+// =============================================
+// CLOSE FACILITY
+// =============================================
+
+document
+    .getElementById("closeFacility")
+    .addEventListener(
+        "click",
+        () => {
+
+            const facility =
+                facilitySelect.value;
+
+
+            if (!facility) {
+                return;
+            }
+
+
+            closedFacilities.add(facility);
+
+
+            updateLocationDropdowns();
+
+            updateFacilityDropdown();
+
+            updateClosedFacilitiesDisplay();
+
+            drawGraph([]);
+
+
+            document
+                .getElementById(
+                    "navigationResult"
+                )
+                .classList.add("hidden");
+
+            document
+                .getElementById(
+                    "comparisonResult"
+                )
+                .classList.add("hidden");
+
+        }
+    );
+
+
+// =============================================
+// REOPEN FACILITY
+// =============================================
+
+document
+    .getElementById("reopenFacility")
+    .addEventListener(
+        "click",
+        () => {
+
+            const facility =
+                facilitySelect.value;
+
+
+            if (!facility) {
+                return;
+            }
+
+
+            closedFacilities.delete(facility);
+
+
+            updateLocationDropdowns();
+
+            updateFacilityDropdown();
+
+            updateClosedFacilitiesDisplay();
+
+            drawGraph([]);
+
+
+            document
+                .getElementById(
+                    "navigationResult"
+                )
+                .classList.add("hidden");
+
+            document
+                .getElementById(
+                    "comparisonResult"
+                )
+                .classList.add("hidden");
+
+        }
+    );
 
 
 // =============================================
@@ -579,10 +945,12 @@ function drawGraph(path = []) {
     graphContainer.innerHTML = "";
 
 
+    const activeGraph =
+        getActiveGraph();
+
+
     const pathEdges = new Set();
 
-
-    // Store route edges
 
     for (
         let i = 0;
@@ -609,10 +977,10 @@ function drawGraph(path = []) {
     // DRAW EDGES
     // =========================================
 
-    for (const source in campusGraph) {
+    for (const source in activeGraph) {
 
         for (
-            const destination in campusGraph[source]
+            const destination in activeGraph[source]
         ) {
 
             const edgeId =
@@ -620,8 +988,6 @@ function drawGraph(path = []) {
                     .sort()
                     .join("|");
 
-
-            // Prevent duplicate undirected edges
 
             if (drawnEdges.has(edgeId)) {
                 continue;
@@ -714,8 +1080,6 @@ function drawGraph(path = []) {
             graphContainer.appendChild(edge);
 
 
-            // Edge distance label
-
             const label =
                 document.createElement("div");
 
@@ -725,7 +1089,7 @@ function drawGraph(path = []) {
 
 
             label.textContent =
-                `${campusGraph[source][destination]} m`;
+                `${activeGraph[source][destination]} m`;
 
 
             label.style.left =
@@ -744,10 +1108,19 @@ function drawGraph(path = []) {
 
 
     // =========================================
-    // DRAW NODES
+    // DRAW ACTIVE NODES
     // =========================================
 
     for (const location of locations) {
+
+        if (
+            closedFacilities.has(location)
+        ) {
+
+            continue;
+
+        }
+
 
         const node =
             document.createElement("div");
@@ -834,14 +1207,11 @@ function showNavigationResult(
         route.textContent =
             "No route found.";
 
-
         distanceElement.textContent =
             "-";
 
-
         edges.textContent =
             "-";
-
 
         algorithmElement.textContent =
             algorithm;
@@ -905,9 +1275,13 @@ document
                 destinationSelect.value;
 
 
+            const activeGraph =
+                getActiveGraph();
+
+
             const result =
                 dijkstra(
-                    campusGraph,
+                    activeGraph,
                     source,
                     destination
                 );
@@ -916,7 +1290,9 @@ document
             showNavigationResult(
                 "Dijkstra Shortest Route",
                 result.path,
-                result.distance,
+                result.path
+                    ? result.distance
+                    : null,
                 "Dijkstra's Algorithm"
             );
 
@@ -942,18 +1318,31 @@ document
                 destinationSelect.value;
 
 
+            const activeGraph =
+                getActiveGraph();
+
+
             const path =
                 bfs(
-                    campusGraph,
+                    activeGraph,
                     source,
                     destination
                 );
 
 
+            const distance =
+                path
+                    ? calculatePathDistance(
+                        activeGraph,
+                        path
+                    )
+                    : null;
+
+
             showNavigationResult(
                 "BFS Route",
                 path,
-                null,
+                distance,
                 "Breadth-First Search (BFS)"
             );
 
@@ -979,6 +1368,10 @@ document
                 compareDestination.value;
 
 
+            const activeGraph =
+                getActiveGraph();
+
+
             // -----------------------------
             // DIJKSTRA
             // -----------------------------
@@ -989,7 +1382,7 @@ document
 
             const dijkstraResult =
                 dijkstra(
-                    campusGraph,
+                    activeGraph,
                     source,
                     destination
                 );
@@ -1012,7 +1405,7 @@ document
 
             const bfsResult =
                 bfs(
-                    campusGraph,
+                    activeGraph,
                     source,
                     destination
                 );
@@ -1061,6 +1454,17 @@ document
                 bfsResult
                     ? bfsResult.join(" → ")
                     : "No route found";
+
+
+            document.getElementById(
+                "bfsDistance"
+            ).textContent =
+                bfsResult
+                    ? `${calculatePathDistance(
+                        activeGraph,
+                        bfsResult
+                    )} m`
+                    : "-";
 
 
             document.getElementById(
@@ -1170,8 +1574,6 @@ tabs.forEach(tab => {
                 tab.dataset.section;
 
 
-            // Remove active tab
-
             tabs.forEach(t => {
 
                 t.classList.remove(
@@ -1184,8 +1586,6 @@ tabs.forEach(tab => {
             tab.classList.add("active");
 
 
-            // Hide all sections
-
             sections.forEach(section => {
 
                 section.classList.remove(
@@ -1194,8 +1594,6 @@ tabs.forEach(tab => {
 
             });
 
-
-            // Show selected section
 
             document
                 .getElementById(target)
@@ -1210,7 +1608,13 @@ tabs.forEach(tab => {
 
 
 // =============================================
-// INITIAL GRAPH
+// INITIALIZE
 // =============================================
+
+updateLocationDropdowns();
+
+updateFacilityDropdown();
+
+updateClosedFacilitiesDisplay();
 
 drawGraph();
