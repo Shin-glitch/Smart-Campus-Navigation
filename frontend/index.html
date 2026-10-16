@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Campus Navigation</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+            <h1>Smart Campus Navigation</h1>
+            <p>Graph Algorithms for Shortest Path Analysis</p>
+        </header>
+
+
+        <!-- Navigation Tabs -->
+
+        <nav class="tabs">
+
+            <button class="tab active" data-section="navigation">
+                Navigation
+            </button>
+
+            <button class="tab" data-section="comparison">
+                Algorithm Comparison
+            </button>
+
+            <button class="tab" data-section="performance">
+                Performance Analysis
+            </button>
+
+        </nav>
+
+
+        <!-- =========================================
+             NAVIGATION SECTION
+        ========================================== -->
+
+        <section id="navigation" class="section active-section">
+
+            <div class="card">
+
+                <h2>Find Shortest Route</h2>
+
+                <div class="controls">
+
+                    <div class="input-group">
+
+                        <label for="source">
+                            Source Location
+                        </label>
+
+                        <select id="source"></select>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="destination">
+                            Destination Location
+                        </label>
+
+                        <select id="destination"></select>
+
+                    </div>
+
+                </div>
+
+
+                <div class="button-group">
+
+                    <button id="findDijkstra" class="primary-button">
+                        Find Route using Dijkstra
+                    </button>
+
+                    <button id="findBFS" class="secondary-button">
+                        Find Route using BFS
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- Navigation Result -->
+
+            <div id="navigationResult" class="card result hidden">
+
+                <h2 id="navigationTitle">
+                    Result
+                </h2>
+
+                <div class="result-box">
+
+                    <p>
+                        <strong>Route:</strong>
+                    </p>
+
+                    <p id="navigationRoute" class="route-text"></p>
+
+                    <p>
+                        <strong>Distance:</strong>
+                        <span id="navigationDistance"></span>
+                    </p>
+
+                    <p>
+                        <strong>Edges:</strong>
+                        <span id="navigationEdges"></span>
+                    </p>
+
+                    <p>
+                        <strong>Algorithm:</strong>
+                        <span id="navigationAlgorithm"></span>
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Campus Graph -->
+
+            <div class="card">
+
+                <h2>Campus Graph</h2>
+
+                <p class="description">
+                    Vertices represent campus locations and
+                    weighted edges represent walking distances.
+                </p>
+
+                <div id="graph"></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================
+             COMPARISON SECTION
+        ========================================== -->
+
+        <section id="comparison" class="section">
+
+            <div class="card">
+
+                <h2>Compare Dijkstra and BFS</h2>
+
+                <div class="controls">
+
+                    <div class="input-group">
+
+                        <label for="compareSource">
+                            Source Location
+                        </label>
+
+                        <select id="compareSource"></select>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="compareDestination">
+                            Destination Location
+                        </label>
+
+                        <select id="compareDestination"></select>
+
+                    </div>
+
+                </div>
+
+
+                <button id="compareButton" class="primary-button">
+                    Compare Algorithms
+                </button>
+
+            </div>
+
+
+            <div id="comparisonResult" class="card hidden">
+
+                <h2>Algorithm Comparison</h2>
+
+                <div class="comparison-grid">
+
+                    <div class="algorithm-card">
+
+                        <h3>Dijkstra's Algorithm</h3>
+
+                        <p>
+                            <strong>Route:</strong>
+                        </p>
+
+                        <p id="dijkstraRoute"></p>
+
+                        <p>
+                            <strong>Distance:</strong>
+                            <span id="dijkstraDistance"></span>
+                        </p>
+
+                        <p>
+                            <strong>Execution Time:</strong>
+                            <span id="dijkstraTime"></span>
+                        </p>
+
+                    </div>
+
+
+                    <div class="algorithm-card">
+
+                        <h3>Breadth-First Search</h3>
+
+                        <p>
+                            <strong>Route:</strong>
+                        </p>
+
+                        <p id="bfsRoute"></p>
+
+                        <p>
+                            <strong>Number of Edges:</strong>
+                            <span id="bfsEdges"></span>
+                        </p>
+
+                        <p>
+                            <strong>Execution Time:</strong>
+                            <span id="bfsTime"></span>
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="explanation">
+
+                    <h3>Why are the results different?</h3>
+
+                    <p>
+                        Dijkstra considers the weight of every edge,
+                        so it finds the minimum-distance route.
+                    </p>
+
+                    <p>
+                        BFS considers only the number of edges,
+                        so it finds a route with the minimum number
+                        of hops.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================
+             PERFORMANCE SECTION
+        ========================================== -->
+
+        <section id="performance" class="section">
+
+            <div class="card">
+
+                <h2>Performance / Complexity Analysis</h2>
+
+                <p class="description">
+                    Both algorithms are tested on graphs of
+                    increasing size.
+                </p>
+
+                <button id="runPerformance" class="primary-button">
+                    Run Performance Analysis
+                </button>
+
+            </div>
+
+
+            <div id="performanceResult" class="card hidden">
+
+                <h2>Experimental Results</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Vertices</th>
+                            <th>Dijkstra (sec)</th>
+                            <th>BFS (sec)</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="performanceTable">
+
+                    </tbody>
+
+                </table>
+
+
+                <div class="complexity">
+
+                    <h2>Theoretical Complexity</h2>
+
+                    <div class="complexity-box">
+
+                        <h3>Dijkstra's Algorithm</h3>
+
+                        <p>
+                            Using a priority queue / binary heap:
+                        </p>
+
+                        <strong>
+                            O((V + E) log V)
+                        </strong>
+
+                    </div>
+
+
+                    <div class="complexity-box">
+
+                        <h3>Breadth-First Search</h3>
+
+                        <p>
+                            Using an adjacency list:
+                        </p>
+
+                        <strong>
+                            O(V + E)
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <footer>
+
+            <p>
+                DAA Project — Smart Campus Navigation
+            </p>
+
+            <p>
+                Graph Algorithms • Shortest Path • Complexity Analysis
+            </p>
+
+        </footer>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
